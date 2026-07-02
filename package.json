@@ -1,5 +1,5 @@
 {
-  "name": "mushi",
+  "name": "gitignoresoc",
   "version": "1.0.0",
   "description": "gitignoreを分割管理して結合するやつ",
   "bin": {
@@ -10,7 +10,19 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "type": "commonjs"
+  "keywords": [
+    "gitignore",
+    "cli",
+    "git"
+  ],
+  "author": "YuzukoUnderson",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DovahkiinYuzuko/gitignoreSoC.git"
+  },
+  "homepage": "https://github.com/DovahkiinYuzuko/gitignoreSoC"
 }
