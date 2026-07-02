@@ -11,7 +11,7 @@
 
 ## 日本語
 
-> ![NOTE]
+> [!NOTE]
 > 本ツールは、`.gitignore`において一度すべてのファイルを対象外（`*`）にした上で、必要なファイルやフォルダのみを例外（`!`）として許可する「ホワイトリスト方式」で管理したいユーザー向けに設計されています。
 
 ### 概要
@@ -66,7 +66,7 @@ mushi --list
 
 ## English
 
-> ![NOTE]
+> [!NOTE]
 > This tool is specifically designed for users who prefer to manage their `.gitignore` using a "whitelist approach," where all files are ignored by default (`*`) and only specific files or folders are allowed as exceptions (`!`).
 
 ### Overview
