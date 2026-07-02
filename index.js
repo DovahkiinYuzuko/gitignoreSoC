@@ -131,9 +131,37 @@ function init() {
   console.log('\nSetup complete. Add fragment files under .gitignores/ (e.g. .gitignores/root.gitignore) and run `mushi` to build.');
 }
 
+// mushi --help: usage
+function printHelp() {
+  console.log(`mushi — split-manage .gitignore fragments and merge them into one
+
+Usage:
+  mushi init          Create .gitignores/ and a whitelist-style .gitignore template
+  mushi               Merge all fragments into .gitignore and clean up tracked files
+  mushi --dry-run     Preview the merge and cleanup without writing anything
+  mushi --list        List fragment files under .gitignores/ with their line counts
+  mushi --help        Show this help message
+
+Examples:
+  mushi init
+  mushi --list
+  mushi --dry-run
+  mushi
+
+Notes:
+  - Fragments live under .gitignores/ as {name}.gitignore, nested folders are fine.
+  - Everything below the "${MARKER}" marker in the root .gitignore is auto-generated; don't edit it by hand.
+  - After merging, files newly matched by ignore rules are removed from Git's index (git rm --cached), never from disk.`);
+}
+
 // --- entry point ---
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
+
+if (args.includes('--help') || args.includes('-h')) {
+  printHelp();
+  process.exit(0);
+}
 
 if (args.includes('init')) {
   init();

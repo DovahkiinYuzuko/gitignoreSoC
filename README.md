@@ -59,6 +59,12 @@ mushi
 mushi --list
 ```
 
+#### 6. ヘルプの表示
+利用可能なコマンドとオプションの一覧を確認できます。
+```bash
+mushi --help
+```
+
 ### LICENSE
 このプロジェクトのライセンスはMITです。詳しくは[LICENSE](LICENSE)をお読みください。
 
@@ -112,6 +118,12 @@ mushi
 You can display a list of the configuration files currently existing under `.gitignores/` along with their respective line counts by running:
 ```bash
 mushi --list
+```
+
+#### 6. Displaying Help
+You can view a list of available commands and options.
+```bash
+mushi --help
 ```
 
 ### LICENSE
