@@ -1,0 +1,7 @@
+# project:gitignoreSoC
+*
+!.gitignore
+# ---AUTO-Generated---
+# gitignoreSoC
+!index.js
+!package.json

@@ -1,0 +1,16 @@
+{
+  "name": "mushi",
+  "version": "1.0.0",
+  "description": "gitignoreを分割管理して結合するやつ",
+  "bin": {
+    "mushi": "index.js"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "commonjs"
+}
