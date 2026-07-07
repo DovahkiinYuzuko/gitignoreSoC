@@ -75,26 +75,35 @@ function diffLines(oldContent, newContent) {
 }
 
 function cleanupTracked(dryRun) {
-  const tracked = execSync('git ls-files', { cwd: ROOT }).toString().split('\n').filter(Boolean);
-  if (tracked.length === 0) return;
+  if (dryRun) {
+    // dry-runの時は実際には何もしない、対象ファイルの一覧だけ見せる
+    const tracked = execSync('git ls-files', { cwd: ROOT }).toString().split('\n').filter(Boolean);
+    if (tracked.length === 0) return;
 
-  const result = execSync('git check-ignore --stdin --verbose', {
-    cwd: ROOT,
-    input: tracked.join('\n'),
-  }).toString();
+    let result = '';
+    try {
+      result = execSync('git check-ignore --stdin --verbose', {
+        cwd: ROOT,
+        input: tracked.join('\n'),
+      }).toString();
+    } catch (e) {
+      // check-ignoreは該当0件だと非ゼロ終了するので握りつぶす
+      return;
+    }
 
-  const toRemove = result.split('\n').filter(Boolean).map(line => line.split('\t').pop());
-  if (toRemove.length === 0) return;
+    const toRemove = result.split('\n').filter(Boolean).map(line => line.split('\t').pop());
+    if (toRemove.length === 0) return;
 
-  console.log(dryRun
-    ? '\n[dry-run] Files that WOULD be removed from tracking (git rm --cached):'
-    : '\nRemoving from tracking (git rm --cached):');
-
-  toRemove.forEach(f => console.log(`${RED}- ${f}${RESET}`));
-
-  if (!dryRun) {
-    execSync(`git rm --cached ${toRemove.map(f => `"${f}"`).join(' ')}`, { cwd: ROOT });
+    console.log('\n[dry-run] Files that WOULD be removed from tracking:');
+    toRemove.forEach(f => console.log(`${RED}- ${f}${RESET}`));
+    return;
   }
+
+  // 通常実行：インデックスを丸ごと作り直して、今のルールを確実に反映させる
+  console.log('\nRebuilding Git index to apply ignore rules...');
+  execSync('git rm -r --cached . -q', { cwd: ROOT });
+  execSync('git add .', { cwd: ROOT });
+  console.log('Index rebuilt. Run `git status` to review the changes before committing.');
 }
 
 // mushi --list: .gitignores/ 配下の断片ファイル一覧を見せるだけ
