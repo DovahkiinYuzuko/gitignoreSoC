@@ -74,36 +74,42 @@ function diffLines(oldContent, newContent) {
   return { removed, added };
 }
 
-function cleanupTracked(dryRun) {
-  if (dryRun) {
-    // dry-runの時は実際には何もしない、対象ファイルの一覧だけ見せる
-    const tracked = execSync('git ls-files', { cwd: ROOT }).toString().split('\n').filter(Boolean);
-    if (tracked.length === 0) return;
+function findIgnoredTrackedFiles() {
+  const tracked = execSync('git ls-files', { cwd: ROOT }).toString().split('\n').filter(Boolean);
+  const toRemove = [];
 
-    let result = '';
+  for (const file of tracked) {
     try {
-      result = execSync('git check-ignore --stdin --verbose', {
-        cwd: ROOT,
-        input: tracked.join('\n'),
-      }).toString();
+      execSync(`git check-ignore -q "${file}"`, { cwd: ROOT });
+      // 終了コード0 = 無視対象に一致した
+      toRemove.push(file);
     } catch (e) {
-      // check-ignoreは該当0件だと非ゼロ終了するので握りつぶす
-      return;
+      // 終了コード1 = 一致しなかった、そのまま
     }
+  }
 
-    const toRemove = result.split('\n').filter(Boolean).map(line => line.split('\t').pop());
-    if (toRemove.length === 0) return;
+  return toRemove;
+}
 
-    console.log('\n[dry-run] Files that WOULD be removed from tracking:');
-    toRemove.forEach(f => console.log(`${RED}- ${f}${RESET}`));
+function cleanupTracked(dryRun) {
+  const toRemove = findIgnoredTrackedFiles();
+
+  if (toRemove.length === 0) {
+    console.log('No tracked files match the ignore rules.');
     return;
   }
 
-  // 通常実行：インデックスを丸ごと作り直して、今のルールを確実に反映させる
-  console.log('\nRebuilding Git index to apply ignore rules...');
-  execSync('git rm -r --cached . -q', { cwd: ROOT });
-  execSync('git add .', { cwd: ROOT });
-  console.log('Index rebuilt. Run `git status` to review the changes before committing.');
+  console.log(dryRun
+    ? '\n[dry-run] Files that WOULD be removed from tracking:'
+    : '\nRemoving from tracking (git rm --cached):');
+
+  toRemove.forEach(f => console.log(`${RED}- ${f}${RESET}`));
+
+  if (!dryRun) {
+    toRemove.forEach(f => {
+      execSync(`git rm --cached -q "${f}"`, { cwd: ROOT });
+    });
+  }
 }
 
 // mushi --list: .gitignores/ 配下の断片ファイル一覧を見せるだけ
